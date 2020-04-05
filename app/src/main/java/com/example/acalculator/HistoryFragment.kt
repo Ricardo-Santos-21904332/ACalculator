@@ -21,8 +21,10 @@ class HistoryFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         list_historic.layoutManager = LinearLayoutManager(activity as Context)
-        list_historic.adapter = HistoryAdapter(activity as Context,R.layout.item_expression,
-            operacoes)
+        list_historic.adapter = HistoryAdapter(
+            activity as Context, R.layout.item_expression,
+            operacoes
+        )
     }
 
 

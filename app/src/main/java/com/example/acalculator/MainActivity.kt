@@ -28,13 +28,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START)
-        }
-        if (supportFragmentManager.backStackEntryCount == 1) {
+        else if (supportFragmentManager.backStackEntryCount == 1)
             finish()
-        }
-        super.onBackPressed()
+        else super.onBackPressed()
     }
 
     private fun setupDrawerMenu() {
