@@ -30,7 +30,7 @@ class HistoryAdapter(
     override fun getItemCount() = items.size
 
     class HistoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val logo : Unit = view.logo.setImageResource(R.drawable.logo)
+        val logo: Unit = view.logo.setImageResource(R.drawable.logo)
         val expression: TextView = view.text_expression
         val result: TextView = view.text_result
     }
