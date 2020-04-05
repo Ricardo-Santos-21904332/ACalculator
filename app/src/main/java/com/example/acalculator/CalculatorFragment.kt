@@ -56,28 +56,27 @@ class CalculatorFragment : Fragment() {
     )
     fun onClickSymbol(view: View) {
         val symbol = view.tag.toString()
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            button_00?.setOnClickListener {
-                Log.i(TAG, "Cliquei no botão 00")
-                if (text_visor.text == "0") {
-                    text_visor.text = "00"
-                } else {
-                    text_visor.append("00")
-                }
-                Toast.makeText(activity as Context, "button_0 " + calculaData(), Toast.LENGTH_SHORT)
-                    .show()
+        button_00?.setOnClickListener {
+            Log.i(TAG, "Cliquei no botão 00")
+            if (text_visor.text == "0") {
+                text_visor.text = "00"
+            } else {
+                text_visor.append("00")
             }
-            button_dummie?.setOnClickListener {
-                Log.i(TAG, "Cliquei no botão 2")
-                if (text_visor.text == "0") {
-                    text_visor.text = "2"
-                } else {
-                    text_visor.append("2")
-                }
-                Toast.makeText(activity as Context, "button_2 " + calculaData(), Toast.LENGTH_SHORT)
-                    .show()
+            Toast.makeText(activity as Context, "button_0 " + calculaData(), Toast.LENGTH_SHORT)
+                .show()
+        }
+        button_dummie?.setOnClickListener {
+            Log.i(TAG, "Cliquei no botão 2")
+            if (text_visor.text == "0") {
+                text_visor.text = "2"
+            } else {
+                text_visor.append("2")
             }
-        } else if (symbol == "<") {
+            Toast.makeText(activity as Context, "button_2 " + calculaData(), Toast.LENGTH_SHORT)
+                .show()
+        }
+        if (symbol == "<") {
             Log.i(TAG, "Cliquei no botão <")
             if (text_visor.text.isEmpty() || text_visor.text.length == 1) {
                 text_visor.text = ""
@@ -95,7 +94,6 @@ class CalculatorFragment : Fragment() {
             Toast.makeText(activity as Context, "button_clear " + calculaData(), Toast.LENGTH_SHORT)
                 .show()
         } else {
-
             Log.i(TAG, "Cliquei no botão $symbol")
             if (text_visor.text == "0") {
                 text_visor.text = symbol
