@@ -22,10 +22,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_calculator -> NavigationManager.goToCalculatorFragment(supportFragmentManager)
+            R.id.nav_history -> NavigationManager.goToHistoryFragment(supportFragmentManager)
         }
-        when (item.itemId) {
-            R.id.nav_history -> startActivity(Intent(this, HistoryActivity::class.java))
-        }
+
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
