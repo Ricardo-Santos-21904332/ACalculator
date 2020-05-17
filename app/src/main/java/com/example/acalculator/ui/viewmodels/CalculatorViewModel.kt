@@ -9,13 +9,11 @@ import com.example.acalculator.domain.calculator.CalculatorLogic
 import com.example.acalculator.ui.listeners.OnDisplayChanged
 import com.example.acalculator.ui.listeners.OnListChanged
 import com.example.acalculator.entities.Operation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class CalculatorViewModel(application: Application) : AndroidViewModel(application) {
     private val storage = CalculatorDatabase.getInstance(application).operationDao()
-    private val operationRepository= OperationRepository(storage,RetrofitBuilder.getInstance(ENDPOINT))
+    private val operationRepository =
+        OperationRepository(storage, RetrofitBuilder.getInstance(ENDPOINT))
     private val calculatorLogic = CalculatorLogic(operationRepository)
     var display: String = "0"
     private var listener: OnDisplayChanged? = null
@@ -51,28 +49,21 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         display = calculatorLogic.performOperationOnline(display).toString()
         notifyOnDisplayChanged()
     }
+
     fun onClickEqualsOffline() {
         display = calculatorLogic.performOperationLocal(display).toString()
         notifyOnDisplayChanged()
     }
 
-    fun getList(): MutableList<Operation>{
-        var lista = mutableListOf<Operation>()
-        CoroutineScope(Dispatchers.IO).launch {
-            lista  = storage.getAll() as MutableList<Operation>
-        }
-        return lista
+    fun getList(): MutableList<Operation> {
+        return calculatorLogic.getAll() as MutableList<Operation>
     }
 
-    fun enviarOperacoesNaoEnviadas(){
+    fun enviarOperacoesNaoEnviadas() {
         calculatorLogic.enviarOperacoesNaoEnviadas()
     }
 
     fun removerLista() {
         calculatorLogic.apagarDaLista()
-    }
-
-    fun removerListaLocal() {
-        calculatorLogic.apagarDaListaLocal()
     }
 }

@@ -4,15 +4,16 @@ import com.example.acalculator.data.repositories.OperationRepository
 import com.example.acalculator.entities.Operation
 import com.example.acalculator.ui.listeners.OnListChanged
 
-class CalculatorLogic(private val repository: OperationRepository) : OnListChanged{
+class CalculatorLogic(private val repository: OperationRepository) : OnListChanged {
 
-    fun registerListener(listener: OnListChanged){
+    fun registerListener(listener: OnListChanged) {
         repository.registerListener(listener)
     }
-    
-    fun unregisterListener(){
+
+    fun unregisterListener() {
         repository.unregisterListener()
     }
+
     fun insertSymbol(display: String, symbol: String): String {
         return if (display == "0" && symbol != "C" && symbol != "<") symbol else if (symbol == "C") "0" else if (symbol == "<") apagarUltimo(
             display
@@ -35,7 +36,7 @@ class CalculatorLogic(private val repository: OperationRepository) : OnListChang
         return repository.insertLocal(expression)
     }
 
-    fun enviarOperacoesNaoEnviadas(){
+    fun enviarOperacoesNaoEnviadas() {
         repository.enviarOperacoesNaoEnviadas()
     }
 
@@ -43,11 +44,7 @@ class CalculatorLogic(private val repository: OperationRepository) : OnListChang
         repository.delete()
     }
 
-    fun apagarDaListaLocal() {
-        repository.deleteLocal()
-    }
-
-    fun getAll() : List<Operation>? {
+    fun getAll(): List<Operation>? {
         return repository.getOperations()
     }
 

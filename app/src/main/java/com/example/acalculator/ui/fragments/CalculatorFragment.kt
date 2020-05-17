@@ -46,7 +46,6 @@ class CalculatorFragment : Fragment(),
     override fun onStart() {
         viewModel.registerListener(this)
         viewModel.registerListListener(this)
-        viewModel.removerListaLocal()
         val pref: SharedPreferences = activity!!.getSharedPreferences("save", 0)
         val editor = pref.edit()
         editor.putString("token", token)
@@ -113,6 +112,7 @@ class CalculatorFragment : Fragment(),
         } else {
             viewModel.onClickEqualsOffline()
         }
+        text_historico?.text = viewModel.display
         list_historic?.adapter =
             HistoryAdapter(
                 activity as Context,

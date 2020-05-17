@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return savedInstanceState != null
     }
 
-    fun onNavLogoutClick(){
+    fun onNavLogoutClick() {
         val pref: SharedPreferences = getSharedPreferences("save", 0)
         val editor = pref.edit()
         editor.putBoolean("login?", false)

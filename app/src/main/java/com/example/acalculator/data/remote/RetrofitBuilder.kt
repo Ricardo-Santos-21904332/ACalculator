@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitBuilder {
 
     companion object {
-        fun getInstance(path:String): Retrofit {
+        fun getInstance(path: String): Retrofit {
             return Retrofit.Builder()
                 .baseUrl(path)
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())

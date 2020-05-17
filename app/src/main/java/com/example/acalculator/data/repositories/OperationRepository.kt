@@ -41,14 +41,15 @@ class OperationRepository(private val local: OperationDao, private val remote: R
             val service = remote.create(OperationService::class.java)
             val response = service.operationGet(token)
             if (response.isSuccessful) {
-                local.delete()
                 for (i in response.body()!!) {
                     i.enviadaParaServidor = true
-                    local.insert(i)
+                    lista.add(i)
                 }
                 atualizarEcra(response.body() as MutableList<Operation>)
+            } else {
+                lista = local.getAll() as MutableList<Operation>
+                atualizarEcra(lista)
             }
-            lista = local.getAll() as MutableList<Operation>
         }
         return lista
     }
@@ -103,11 +104,4 @@ class OperationRepository(private val local: OperationDao, private val remote: R
             }
         }
     }
-
-    fun deleteLocal() {
-        CoroutineScope(Dispatchers.IO).launch {
-            local.delete()
-        }
-    }
-
 }

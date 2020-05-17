@@ -30,7 +30,7 @@ class ListStorage private constructor() {
     }
 
     suspend fun getAll(): MutableList<Operation> {
-       return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             Thread.sleep(30000)
             storage
         }
