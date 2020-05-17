@@ -1,15 +1,18 @@
 package com.example.acalculator.domain.calculator
 
+import com.example.acalculator.data.repositories.OperationRepository
 import com.example.acalculator.entities.Operation
-import com.example.acalculator.data.local.list.ListStorage
-import com.example.acalculator.data.local.room.dao.OperationDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import net.objecthunter.exp4j.ExpressionBuilder
+import com.example.acalculator.ui.listeners.OnListChanged
 
-class CalculatorLogic(private val storage: OperationDao) {
+class CalculatorLogic(private val repository: OperationRepository) : OnListChanged{
 
+    fun registerListener(listener: OnListChanged){
+        repository.registerListener(listener)
+    }
+    
+    fun unregisterListener(){
+        repository.unregisterListener()
+    }
     fun insertSymbol(display: String, symbol: String): String {
         return if (display == "0" && symbol != "C" && symbol != "<") symbol else if (symbol == "C") "0" else if (symbol == "<") apagarUltimo(
             display
@@ -24,31 +27,31 @@ class CalculatorLogic(private val storage: OperationDao) {
         }
     }
 
-    fun performOperation(expression: String): Double {
-        val expressionBuilder = ExpressionBuilder(expression).build()
-        val result = expressionBuilder.evaluate()
-        CoroutineScope(Dispatchers.IO).launch {
-            storage.insert(
-                Operation(
-                    expression,
-                    result
-                )
-            )
-        }
-        return result
+    fun performOperationOnline(expression: String): Double {
+        return repository.insertOnline(expression)
     }
 
-    fun apagarDaLista(posicao: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            //storage.deleteItem(posicao)
-        }
+    fun performOperationLocal(expression: String): Double {
+        return repository.insertLocal(expression)
     }
 
-    fun getList(): MutableList<Operation> {
-        var list = mutableListOf<Operation>()
-        CoroutineScope(Dispatchers.IO).launch {
-            list = storage.getAll() as MutableList<Operation>
-        }
-        return list
+    fun enviarOperacoesNaoEnviadas(){
+        repository.enviarOperacoesNaoEnviadas()
+    }
+
+    fun apagarDaLista() {
+        repository.delete()
+    }
+
+    fun apagarDaListaLocal() {
+        repository.deleteLocal()
+    }
+
+    fun getAll() : List<Operation>? {
+        return repository.getOperations()
+    }
+
+    override fun onListChanged(list: MutableList<Operation>?) {
+        repository.onListChanged(list)
     }
 }

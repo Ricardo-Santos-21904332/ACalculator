@@ -2,28 +2,26 @@ package com.example.acalculator.ui.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import com.example.acalculator.data.local.room.CalculatorDatabase
+import com.example.acalculator.data.remote.RetrofitBuilder
+import com.example.acalculator.data.repositories.OperationRepository
 import com.example.acalculator.domain.calculator.CalculatorLogic
 import com.example.acalculator.ui.listeners.OnDisplayChanged
 import com.example.acalculator.ui.listeners.OnListChanged
 import com.example.acalculator.entities.Operation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CalculatorViewModel(application: Application) : AndroidViewModel(application) {
+    private val storage = CalculatorDatabase.getInstance(application).operationDao()
+    private val operationRepository= OperationRepository(storage,RetrofitBuilder.getInstance(ENDPOINT))
+    private val calculatorLogic = CalculatorLogic(operationRepository)
     var display: String = "0"
     private var listener: OnDisplayChanged? = null
-    private var listenerList: OnListChanged? = null
-    private val storage = CalculatorDatabase.getInstance(application).operationDao()
-    private val calculatorLogic =
-        CalculatorLogic(storage)
-
 
     private fun notifyOnDisplayChanged() {
         listener?.onDisplayChanged(display)
-    }
-
-    private fun notifyOnListChanged() {
-        listenerList?.onListChanged(getList())
     }
 
     fun registerListener(listener: OnDisplayChanged) {
@@ -31,17 +29,17 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         listener.onDisplayChanged(display)
     }
 
-    fun registerListListenerList(listener: OnListChanged) {
-        this.listenerList = listener
-        listener.onListChanged(getList())
+    fun registerListListener(listener: OnListChanged) {
+        calculatorLogic.registerListener(listener)
+        listener.onListChanged(calculatorLogic.getAll() as MutableList<Operation>)
+    }
+
+    fun unregisterListListener() {
+        calculatorLogic.unregisterListener()
     }
 
     fun unregisterListener() {
         listener = null
-    }
-
-    fun unregisterListListener() {
-        listenerList = null
     }
 
     fun onClickSymbol(symbol: String) {
@@ -49,18 +47,32 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         notifyOnDisplayChanged()
     }
 
-    fun onClickEquals() {
-        display = calculatorLogic.performOperation(display).toString()
+    fun onClickEqualsOnline() {
+        display = calculatorLogic.performOperationOnline(display).toString()
         notifyOnDisplayChanged()
-        notifyOnListChanged()
+    }
+    fun onClickEqualsOffline() {
+        display = calculatorLogic.performOperationLocal(display).toString()
+        notifyOnDisplayChanged()
     }
 
-    fun getList(): MutableList<Operation> {
-        return calculatorLogic.getList()
+    fun getList(): MutableList<Operation>{
+        var lista = mutableListOf<Operation>()
+        CoroutineScope(Dispatchers.IO).launch {
+            lista  = storage.getAll() as MutableList<Operation>
+        }
+        return lista
     }
 
-    fun removerLista(posicao: Int) {
-        calculatorLogic.apagarDaLista(posicao)
-        notifyOnListChanged()
+    fun enviarOperacoesNaoEnviadas(){
+        calculatorLogic.enviarOperacoesNaoEnviadas()
+    }
+
+    fun removerLista() {
+        calculatorLogic.apagarDaLista()
+    }
+
+    fun removerListaLocal() {
+        calculatorLogic.apagarDaListaLocal()
     }
 }

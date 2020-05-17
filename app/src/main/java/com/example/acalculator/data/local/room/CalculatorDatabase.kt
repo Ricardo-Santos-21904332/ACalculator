@@ -9,10 +9,10 @@ import com.example.acalculator.entities.Operation
 
 @Database(entities = arrayOf(Operation::class), version = 1)
 abstract class CalculatorDatabase : RoomDatabase() {
-
     abstract fun operationDao(): OperationDao
 
     companion object {
+
         private var instance: CalculatorDatabase? = null
 
         fun getInstance(applicationContext: Context): CalculatorDatabase {

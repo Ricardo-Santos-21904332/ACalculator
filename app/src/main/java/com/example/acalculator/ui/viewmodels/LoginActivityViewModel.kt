@@ -1,14 +1,19 @@
 package com.example.acalculator.ui.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.example.acalculator.data.local.list.ListUsers
 import com.example.acalculator.data.remote.RetrofitBuilder
-import com.example.acalculator.ui.activities.LoginActivity
+import com.example.acalculator.domain.auth.AuthLogic
 
-const val ENDPOINT = "https://cm-calculadroa.herokuapp.com/api/"
+const val  ENDPOINT= "https://cm-calculadora.herokuapp.com/api/"
+class LoginActivityViewModel(application: Application): AndroidViewModel(application) {
 
-class LoginActivityViewModel : ViewModel() {
+    private val listUsers = ListUsers.getInstance()
+    private val authLogic= AuthLogic(
+        RetrofitBuilder.getInstance(ENDPOINT),listUsers)
 
-     val loginActivity = RetrofitBuilder.getInstance(ENDPOINT)
-
+    fun onClickLogin(email:String, password:String){
+        authLogic.authenticateUser(email,password)
+    }
 }

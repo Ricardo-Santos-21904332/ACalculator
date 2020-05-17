@@ -1,13 +1,13 @@
 package com.example.acalculator.data.remote.services
 
-import com.example.acalculator.data.remote.requests.Login
+import com.example.acalculator.data.remote.requests.Register
 import com.example.acalculator.data.remote.responses.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface AuthService {
+interface RegisterService {
 
-    @POST("users/login")
-    suspend fun login(@Body body: Login): Response<LoginResponse>
+    @POST("users/register")
+    suspend fun register(@Body body: Register): Response<LoginResponse>
 }

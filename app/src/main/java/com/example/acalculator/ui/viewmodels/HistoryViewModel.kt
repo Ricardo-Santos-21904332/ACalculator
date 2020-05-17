@@ -4,32 +4,31 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.example.acalculator.data.local.room.CalculatorDatabase
+import com.example.acalculator.data.local.room.dao.OperationDao
+import com.example.acalculator.data.remote.RetrofitBuilder
+import com.example.acalculator.data.repositories.OperationRepository
 import com.example.acalculator.domain.calculator.CalculatorLogic
+import com.example.acalculator.entities.Operation
 import com.example.acalculator.ui.listeners.OnListChanged
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class HistoryViewModel(application: Application) : AndroidViewModel(application) {
+class HistoryViewModel(application: Application) : AndroidViewModel(application)  {
     private val storage = CalculatorDatabase.getInstance(application).operationDao()
-    private val calculatorLogic =
-        CalculatorLogic(storage)
-    var lista = calculatorLogic.getList()
-
-    private var listener: OnListChanged? = null
-
-    private fun notifyOnListChanged() {
-        listener?.onListChanged(lista)
-    }
+    private val operationRepository= OperationRepository(storage,RetrofitBuilder.getInstance(ENDPOINT))
+    private val calculatorLogic = CalculatorLogic(operationRepository)
 
     fun registerListListener(listener: OnListChanged) {
-        this.listener = listener
-        listener.onListChanged(lista)
+        calculatorLogic.registerListener(listener)
+        listener.onListChanged(calculatorLogic.getAll() as MutableList<Operation>)
     }
 
     fun unregisterListListener() {
-        listener = null
+        calculatorLogic.unregisterListener()
     }
 
-    fun removerLista(posicao: Int) {
-        calculatorLogic.apagarDaLista(posicao)
-        notifyOnListChanged()
+    fun removerLista() {
+        calculatorLogic.apagarDaLista()
     }
 }

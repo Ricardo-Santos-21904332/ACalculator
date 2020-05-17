@@ -1,4 +1,8 @@
 package com.example.acalculator.entities
 
-class User(val nome: String, val email: String, val password: String) {
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class User(val nome: String, val email: String, val password: String, @PrimaryKey val token: String) {
 }

@@ -32,23 +32,17 @@ class HistoryFragment : Fragment(),
 
     override fun onStart() {
         viewModel.registerListListener(this)
-        list_historic.layoutManager = LinearLayoutManager(activity as Context)
-        list_historic.adapter =
-            HistoryAdapter(
-                activity as Context,
-                R.layout.item_expression,
-                viewModel.lista, this
-            )
         super.onStart()
     }
 
     override fun onListChanged(list: MutableList<Operation>?) {
         list?.let {
+            list_historic.layoutManager = LinearLayoutManager(activity as Context)
             list_historic.adapter =
                 HistoryAdapter(
                     activity as Context,
                     R.layout.item_expression,
-                    it, this
+                    it.toMutableList(), this
                 )
         }
     }
@@ -59,7 +53,7 @@ class HistoryFragment : Fragment(),
     }
 
     override fun onOperationCLicked(posicao: Int) {
-        viewModel.removerLista(posicao)
-        Toast.makeText(activity as Context, "Operação removida!", Toast.LENGTH_SHORT).show()
+        viewModel.removerLista()
+        Toast.makeText(activity as Context, "Operações removidas!", Toast.LENGTH_SHORT).show()
     }
 }

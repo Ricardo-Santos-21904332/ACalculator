@@ -1,6 +1,7 @@
 package com.example.acalculator.ui.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,10 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.example.acalculator.*
+import com.example.acalculator.domain.auth.token
 import com.example.acalculator.entities.Operation
 import com.example.acalculator.ui.adapters.HistoryAdapter
 import com.example.acalculator.ui.listeners.OnDisplayChanged
 import com.example.acalculator.ui.listeners.OnListChanged
+import com.example.acalculator.ui.utils.VerificarInternet
 import com.example.acalculator.ui.viewmodels.CalculatorViewModel
 import kotlinx.android.synthetic.main.fragment_calculator.*
 import kotlinx.android.synthetic.main.fragment_calculator.list_historic
@@ -42,15 +45,12 @@ class CalculatorFragment : Fragment(),
 
     override fun onStart() {
         viewModel.registerListener(this)
-        viewModel.registerListListenerList(this)
-        list_historic?.layoutManager = LinearLayoutManager(activity as Context)
-        list_historic?.adapter =
-            HistoryAdapter(
-                activity as Context,
-                R.layout.item_expression,
-                viewModel.getList(),
-                this
-            )
+        viewModel.registerListListener(this)
+        viewModel.removerListaLocal()
+        val pref: SharedPreferences = activity!!.getSharedPreferences("save", 0)
+        val editor = pref.edit()
+        editor.putString("token", token)
+        editor.apply()
         super.onStart()
     }
 
@@ -60,11 +60,12 @@ class CalculatorFragment : Fragment(),
 
     override fun onListChanged(list: MutableList<Operation>?) {
         list?.let {
+            list_historic?.layoutManager = LinearLayoutManager(activity as Context)
             list_historic?.adapter =
                 HistoryAdapter(
                     activity as Context,
                     R.layout.item_expression,
-                    it,
+                    it.toMutableList(),
                     this
                 )
         }
@@ -106,7 +107,12 @@ class CalculatorFragment : Fragment(),
 
     @OnClick(R.id.button_equals)
     fun onClickEquals(view: View) {
-        viewModel.onClickEquals()
+        if (VerificarInternet.temInternet(activity!!)) {
+            viewModel.enviarOperacoesNaoEnviadas()
+            viewModel.onClickEqualsOnline()
+        } else {
+            viewModel.onClickEqualsOffline()
+        }
         list_historic?.adapter =
             HistoryAdapter(
                 activity as Context,
@@ -127,7 +133,7 @@ class CalculatorFragment : Fragment(),
     }
 
     override fun onOperationCLicked(posicao: Int) {
-        viewModel.removerLista(posicao)
-        Toast.makeText(activity as Context, "Operação removida!", Toast.LENGTH_SHORT).show()
+        viewModel.removerLista()
+        Toast.makeText(activity as Context, "Operaçã removida!", Toast.LENGTH_SHORT).show()
     }
 }

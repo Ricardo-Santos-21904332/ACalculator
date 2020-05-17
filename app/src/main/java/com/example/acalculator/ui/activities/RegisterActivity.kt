@@ -4,14 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModelProviders
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.example.acalculator.R
+import com.example.acalculator.domain.register.registadoComSucesso
 import com.example.acalculator.ui.viewmodels.RegisterActivityViewModel
-import com.example.acalculator.entities.User
 import kotlinx.android.synthetic.main.activity_register.*
-import org.apache.commons.codec.digest.DigestUtils
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var viewModel: RegisterActivityViewModel
@@ -30,21 +30,12 @@ class RegisterActivity : AppCompatActivity() {
         val email = user_email.text.toString()
         val password = user_password.text.toString()
         val confirmarPassword = user_password_confirm.text.toString()
-        if (nome != "" && email != "" && password != "" && confirmarPassword != "") {
-            if (registoComSucesso(password, confirmarPassword)) {
-                val hash: String = DigestUtils.sha256Hex(password)
-                val user =
-                    User(nome, email, hash)
-                viewModel.insert(user)
-                Toast.makeText(this, "Conta criada com sucesso", Toast.LENGTH_SHORT)
-                    .show()
-                finish()
+        if (password == confirmarPassword) {
+            viewModel.onClickRegister(nome, email, password)
+            if (registadoComSucesso) {
+                Toast.makeText(this, "Conta registada com sucesso!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, LoginActivity::class.java))
-            } else {
-                Toast.makeText(this, "Passwords diferentes", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "Parametros inválidos", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -54,10 +45,4 @@ class RegisterActivity : AppCompatActivity() {
         startActivity(Intent(this, LoginActivity::class.java))
     }
 
-    fun registoComSucesso(password: String, confirmarPassword: String): Boolean {
-        if (password == confirmarPassword) {
-            return true
-        }
-        return false
-    }
 }
